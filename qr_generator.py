@@ -1,14 +1,41 @@
 import argparse
-import os
-import qrcode
 import logging
+from logging.handlers import RotatingFileHandler
+import qrcode
+import os
+import sys
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+log_file_path = os.path.join('logs', 'info.log')
+
+# Configure formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Create file handler with rotation
+file_handler = RotatingFileHandler(
+    log_file_path, 
+    maxBytes=1024*1024*5,  # 5 MB max file size
+    backupCount=3,  # Keep up to 3 backup files
+    mode='a'  # Append mode
 )
+file_handler.setFormatter(formatter)
+
+# Create console handler for Docker logs
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(formatter)
+
+# Configure root logger
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Add both handlers if they don't already exist.
+if not logger.hasHandlers():
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
 
 def generate_qr_code(url, output_dir, filename, fill_color="black", back_color="white"):
     """
@@ -61,8 +88,9 @@ def main():
     url = args.url or os.environ.get('QR_DATA_URL', 'https://github.com/sarvaniyl')
     output_dir = os.environ.get('QR_CODE_DIR', 'qr_codes')
     filename = os.environ.get('QR_CODE_FILENAME', 'github_qr.png')
-    fill_color = os.environ.get('FILL_COLOR', 'black')
-    back_color = os.environ.get('BACK_COLOR', 'white')
+    # Fix the color values by stripping any extra quotes
+    fill_color = os.environ.get('FILL_COLOR', 'black').strip("'\"")
+    back_color = os.environ.get('BACK_COLOR', 'white').strip("'\"")
     
     logger.info(f"Generating QR code for URL: {url}")
     logger.info(f"Output directory: {output_dir}")

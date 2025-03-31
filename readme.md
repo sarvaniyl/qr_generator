@@ -14,7 +14,7 @@ This application uses:
 Below is the QR code that links to my GitHub profile:
 
 <!-- Insert your QR code image here once generated -->
-![GitHub QR Code](github_qr.png)
+![GitHub QR Code](/output/github_qr.png)
 
 ## Build & Run Logs
 
@@ -33,7 +33,8 @@ Below is a screenshot showing the successful creation of the QR code:
 - `qr_generator.py`: Python script that generates the QR code
 - `Dockerfile`: Instructions for building the Docker image
 - `requirements.txt`: Python dependencies
-- `README.md`: This documentation file
+- `docker-compose.yaml`: Docker Compose configuration for building and running the container.
+- `README.md`: This documentation file, providing information about the repository and its usage.
 
 ## Setup Instructions
 
